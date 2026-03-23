@@ -1,5 +1,5 @@
 //! Query Engine - Fuzzy matching and symbol resolution
-//! 
+//!
 //! 模糊匹配（Fuzzy Finding）如 redis.NewClient → github.com/redis/go-redis
 //! 微秒级实时解析（Real-time Resolution）
 
@@ -27,34 +27,33 @@ impl QueryEngine {
     /// Exact lookup by symbol name (microsecond-level)
     pub fn exact_lookup(&self, name: &str) -> Vec<Symbol> {
         let start = std::time::Instant::now();
-        
+
         let result = self.index.get_by_name(name).unwrap_or_default();
-        
+
         let elapsed = start.elapsed();
         debug!("Exact lookup for '{}' took {:?}", name, elapsed);
-        
+
         result
     }
 
     /// Lookup with package prefix (e.g., "redis.NewClient")
     pub fn qualified_lookup(&self, qualified_name: &str) -> Vec<Symbol> {
         let start = std::time::Instant::now();
-        
+
         let parts: Vec<&str> = qualified_name.split('.').collect();
         let result = match parts.len() {
             1 => self.exact_lookup(parts[0]),
             2 => {
                 let package_hint = parts[0];
                 let symbol_name = parts[1];
-                
+
                 self.index
                     .get_by_name(symbol_name)
                     .map(|symbols| {
                         symbols
                             .into_iter()
                             .filter(|s| {
-                                s.package_name == package_hint
-                                    || s.package.contains(package_hint)
+                                s.package_name == package_hint || s.package.contains(package_hint)
                             })
                             .collect()
                     })
@@ -62,10 +61,13 @@ impl QueryEngine {
             }
             _ => vec![],
         };
-        
+
         let elapsed = start.elapsed();
-        debug!("Qualified lookup for '{}' took {:?}", qualified_name, elapsed);
-        
+        debug!(
+            "Qualified lookup for '{}' took {:?}",
+            qualified_name, elapsed
+        );
+
         result
     }
 
@@ -104,7 +106,7 @@ impl QueryEngine {
         }
 
         let first_char = prefix.chars().next().unwrap();
-        
+
         self.index
             .prefix_index
             .get(&first_char)
@@ -141,10 +143,10 @@ impl FuzzyMatcher {
 
     pub fn search(&self, query: &str, limit: usize) -> Vec<(Symbol, u32)> {
         let start = std::time::Instant::now();
-        
+
         // Get all symbol names (this could be optimized with a pre-built FST)
         let all_names = self.index.all_symbol_names();
-        
+
         // Create pattern atom for nucleo
         let atom = Atom::new(
             query,
@@ -160,7 +162,7 @@ impl FuzzyMatcher {
         for name in all_names {
             // Convert to Utf32String (nucleo's internal format)
             let utf32 = self.get_or_convert(&name);
-            
+
             if let Some(score) = atom.score(utf32.slice(..), &mut matcher) {
                 if let Some(symbols) = self.index.get_by_name(&name) {
                     for symbol in symbols {
@@ -168,7 +170,7 @@ impl FuzzyMatcher {
                     }
                 }
             }
-            
+
             if results.len() >= limit * 3 {
                 break;
             }
@@ -203,10 +205,10 @@ impl SimpleFuzzyMatcher {
     pub fn edit_distance(a: &str, b: &str) -> usize {
         let a_chars: Vec<char> = a.chars().collect();
         let b_chars: Vec<char> = b.chars().collect();
-        
+
         let len_a = a_chars.len();
         let len_b = b_chars.len();
-        
+
         if len_a == 0 {
             return len_b;
         }
@@ -225,7 +227,11 @@ impl SimpleFuzzyMatcher {
 
         for i in 1..=len_a {
             for j in 1..=len_b {
-                let cost = if a_chars[i - 1] == b_chars[j - 1] { 0 } else { 1 };
+                let cost = if a_chars[i - 1] == b_chars[j - 1] {
+                    0
+                } else {
+                    1
+                };
                 matrix[i][j] = (matrix[i - 1][j] + 1)
                     .min(matrix[i][j - 1] + 1)
                     .min(matrix[i - 1][j - 1] + cost);
@@ -261,7 +267,7 @@ mod tests {
 
     fn create_test_index() -> Arc<InvertedIndex> {
         let index = Arc::new(InvertedIndex::new());
-        
+
         let symbols = vec![
             Symbol {
                 name: "NewClient".to_string(),

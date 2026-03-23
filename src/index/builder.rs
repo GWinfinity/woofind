@@ -1,5 +1,5 @@
 //! Index Builder - Scans Go modules and builds the inverted index
-//! 
+//!
 //! 增量更新：基于 notify 库监听文件系统事件，变更时仅更新差量索引
 
 use super::{InvertedIndex, ModuleInfo};
@@ -171,7 +171,7 @@ impl IndexBuilder {
                 match res {
                     Ok(event) => {
                         debug!("File system event: {:?}", event);
-                        
+
                         match event.kind {
                             EventKind::Create(_) | EventKind::Modify(_) => {
                                 for path in event.paths {
@@ -212,7 +212,7 @@ impl IndexBuilder {
         let index = Arc::clone(&self.index);
         let parser = Arc::clone(&self.parser);
         let cache = Arc::clone(&self.cache);
-        
+
         std::thread::spawn(move || {
             let runtime = tokio::runtime::Runtime::new().unwrap();
             runtime.block_on(async {
@@ -235,19 +235,19 @@ impl IndexBuilder {
     ) {
         while let Ok(event) = rx.recv() {
             let start = Instant::now();
-            
+
             match event {
                 IndexEvent::ModuleAdded(path) => {
                     info!("📦 New module detected: {:?}", path);
                     if let Ok(module) = parser.parse_module(&path) {
                         // Remove old entries for this module if any
                         index.remove_package(&module.path);
-                        
+
                         // Add new symbols
                         for symbol in &module.symbols {
                             index.insert(symbol.clone());
                         }
-                        
+
                         info!(
                             "   Added {} symbols in {:?}",
                             module.symbols.len(),
@@ -305,7 +305,7 @@ mod tests {
     fn test_index_builder() {
         let temp = TempDir::new().unwrap();
         let builder = IndexBuilder::new().unwrap();
-        
+
         // Create a dummy go.mod
         std::fs::write(
             temp.path().join("go.mod"),

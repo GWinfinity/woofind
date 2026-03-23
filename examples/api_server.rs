@@ -28,10 +28,10 @@ async fn main() -> anyhow::Result<()> {
 
     // Example queries
     println!("Querying symbols...");
-    
+
     let results = engine.smart_search("NewClient", 10);
     println!("Found {} results", results.len());
-    
+
     for symbol in results {
         println!("  - {} ({})", symbol.name, symbol.package);
     }

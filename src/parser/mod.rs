@@ -7,8 +7,6 @@ use tree_sitter::{Node, Parser};
 
 use crate::index::{Symbol, SymbolKind};
 
-
-
 /// Parsed Go module information
 #[derive(Debug, Clone)]
 pub struct ParsedModule {
@@ -28,8 +26,10 @@ impl GoModuleParser {
     pub fn new() -> Self {
         let mut parser = Parser::new();
         let language = tree_sitter_go::LANGUAGE.into();
-        parser.set_language(&language).expect("Failed to load Go grammar");
-        
+        parser
+            .set_language(&language)
+            .expect("Failed to load Go grammar");
+
         Self { parser }
     }
 
@@ -42,12 +42,12 @@ impl GoModuleParser {
 
         // Parse go.mod
         let (module_path, go_version) = self.parse_go_mod_content(&content)?;
-        
+
         debug!("📦 Parsing module: {}", module_path);
 
         // Find all Go files in the module
         let go_files = self.find_go_files(module_dir)?;
-        
+
         // Parse symbols from all Go files
         let mut all_symbols = Vec::new();
         for file in &go_files {
@@ -73,7 +73,7 @@ impl GoModuleParser {
 
         for line in content.lines() {
             let trimmed = line.trim();
-            
+
             if trimmed.starts_with("module ") {
                 module_path = trimmed
                     .strip_prefix("module ")
@@ -122,17 +122,16 @@ impl GoModuleParser {
             .filter_map(|e| e.ok())
         {
             let path = entry.path();
-            
+
             // Skip vendor and hidden directories
-            if path.to_string_lossy().contains("vendor/")
-                || path.to_string_lossy().contains("/.")
-            {
+            if path.to_string_lossy().contains("vendor/") || path.to_string_lossy().contains("/.") {
                 continue;
             }
 
             if path.extension() == Some(std::ffi::OsStr::new("go")) {
                 // Skip test files for symbol indexing
-                if !path.file_name()
+                if !path
+                    .file_name()
                     .map(|n| n.to_string_lossy().ends_with("_test.go"))
                     .unwrap_or(true)
                 {
@@ -148,10 +147,12 @@ impl GoModuleParser {
     fn parse_go_file(&self, path: &Path, module_path: &str) -> Result<Vec<Symbol>> {
         let content = std::fs::read_to_string(path)?;
         let package_name = self.extract_package_name(&content);
-        
+
         let mut parser = Parser::new();
         let language = tree_sitter_go::LANGUAGE.into();
-        parser.set_language(&language).expect("Failed to load Go grammar");
+        parser
+            .set_language(&language)
+            .expect("Failed to load Go grammar");
         let tree = parser
             .parse(&content, None)
             .context("Failed to parse Go file")?;
@@ -161,13 +162,7 @@ impl GoModuleParser {
         let source = content.as_bytes();
 
         // Walk the AST and extract symbols
-        self.extract_symbols_from_node(
-            &root,
-            source,
-            module_path,
-            &package_name,
-            &mut symbols,
-        );
+        self.extract_symbols_from_node(&root, source, module_path, &package_name, &mut symbols);
 
         Ok(symbols)
     }
@@ -201,7 +196,7 @@ impl GoModuleParser {
                 if let Some(name_node) = node.child_by_field_name("name") {
                     let name = self.node_text(&name_node, source);
                     let signature = self.extract_function_signature(node, source);
-                    
+
                     symbols.push(Symbol {
                         name,
                         package: module_path.to_string(),
@@ -219,7 +214,7 @@ impl GoModuleParser {
                     let name = self.node_text(&name_node, source);
                     let receiver = self.extract_receiver(node, source);
                     let full_name = format!("{}.{}", receiver, name);
-                    
+
                     symbols.push(Symbol {
                         name: full_name,
                         package: module_path.to_string(),
@@ -240,7 +235,7 @@ impl GoModuleParser {
                         if let Some(name_node) = child.child_by_field_name("name") {
                             let name = self.node_text(&name_node, source);
                             let kind = self.determine_type_kind(&child);
-                            
+
                             symbols.push(Symbol {
                                 name,
                                 package: module_path.to_string(),
@@ -261,13 +256,13 @@ impl GoModuleParser {
                 } else {
                     SymbolKind::Var
                 };
-                
+
                 let mut cursor = node.walk();
                 for child in node.children(&mut cursor) {
                     if child.kind() == "const_spec" || child.kind() == "var_spec" {
                         if let Some(name_node) = child.child_by_field_name("name") {
                             let name = self.node_text(&name_node, source);
-                            
+
                             symbols.push(Symbol {
                                 name,
                                 package: module_path.to_string(),
@@ -288,13 +283,7 @@ impl GoModuleParser {
         // Recursively process children
         let mut cursor = node.walk();
         for child in node.children(&mut cursor) {
-            self.extract_symbols_from_node(
-                &child,
-                source,
-                module_path,
-                package_name,
-                symbols,
-            );
+            self.extract_symbols_from_node(&child, source, module_path, package_name, symbols);
         }
     }
 
@@ -306,15 +295,15 @@ impl GoModuleParser {
     /// Extract function signature
     fn extract_function_signature(&self, node: &Node, source: &[u8]) -> String {
         let mut parts = Vec::new();
-        
+
         if let Some(params) = node.child_by_field_name("parameters") {
             parts.push(self.node_text(&params, source));
         }
-        
+
         if let Some(result) = node.child_by_field_name("result") {
             parts.push(self.node_text(&result, source));
         }
-        
+
         if parts.is_empty() {
             "func()".to_string()
         } else {
@@ -381,7 +370,7 @@ require (
     github.com/some/dep v1.0.0
 )
 "#;
-        
+
         let (module_path, go_version) = parser.parse_go_mod_content(content).unwrap();
         assert_eq!(module_path, "github.com/example/test");
         assert_eq!(go_version, "1.21");
@@ -396,7 +385,7 @@ import "fmt"
 
 func main() {}
 "#;
-        
+
         assert_eq!(parser.extract_package_name(content), "mypackage");
     }
 }

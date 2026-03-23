@@ -1,5 +1,5 @@
 //! woofind - Blazing-fast Go import discovery
-//! 
+//!
 //! 零成本抽象：DashMap 提供 Go 的 sync.Map 无法比拟的无锁并发读性能
 //! 内存映射：使用 memmap2 将缓存文件映射到内存，冷启动从 2s 降至 200ms
 //! 增量更新：基于 notify 库监听文件系统事件，变更时仅更新差量索引
@@ -84,7 +84,7 @@ async fn main() -> Result<()> {
                 .unwrap_or_else(|_| if cli.verbose { "debug" } else { "info" }.into()),
         )
         .finish();
-    
+
     tracing::subscriber::set_global_default(subscriber)?;
 
     info!("🐕 woofind starting...");

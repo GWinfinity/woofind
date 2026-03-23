@@ -4,7 +4,7 @@ use woofind::index::{InvertedIndex, QueryEngine, Symbol, SymbolKind};
 
 fn create_test_index() -> Arc<InvertedIndex> {
     let index = Arc::new(InvertedIndex::new());
-    
+
     // 插入测试符号
     for pkg in 0..100 {
         for sym in 0..100 {
@@ -21,14 +21,14 @@ fn create_test_index() -> Arc<InvertedIndex> {
             index.insert(symbol);
         }
     }
-    
+
     index
 }
 
 fn exact_query_benchmark(c: &mut Criterion) {
     let index = create_test_index();
     let engine = QueryEngine::new(index);
-    
+
     c.bench_function("exact_query", |b| {
         b.iter(|| {
             let result = engine.exact_lookup(black_box("Symbol50"));
@@ -40,7 +40,7 @@ fn exact_query_benchmark(c: &mut Criterion) {
 fn fuzzy_query_benchmark(c: &mut Criterion) {
     let index = create_test_index();
     let engine = QueryEngine::new(index);
-    
+
     c.bench_function("fuzzy_query", |b| {
         b.iter(|| {
             let result = engine.fuzzy_search(black_box("Smb50"), 10);
@@ -52,7 +52,7 @@ fn fuzzy_query_benchmark(c: &mut Criterion) {
 fn smart_search_benchmark(c: &mut Criterion) {
     let index = create_test_index();
     let engine = QueryEngine::new(index);
-    
+
     c.bench_function("smart_search", |b| {
         b.iter(|| {
             let result = engine.smart_search(black_box("pkg1.Symbol5"), 10);
@@ -63,9 +63,9 @@ fn smart_search_benchmark(c: &mut Criterion) {
 
 fn concurrent_query_benchmark(c: &mut Criterion) {
     use rayon::prelude::*;
-    
+
     let index = create_test_index();
-    
+
     c.bench_function("concurrent_reads_16_threads", |b| {
         b.iter(|| {
             (0..16).into_par_iter().for_each(|i| {

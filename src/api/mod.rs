@@ -1,5 +1,5 @@
 //! HTTP API for real-time symbol resolution
-//! 
+//!
 //! 微秒级实时解析（Real-time Resolution）
 
 use axum::{

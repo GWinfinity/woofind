@@ -14,8 +14,8 @@ use tower_http::cors::CorsLayer;
 use tracing::warn;
 
 use crate::cache::MmapCache;
-use crate::index::{QueryEngine, Symbol};
 use crate::index::InvertedIndex;
+use crate::index::{QueryEngine, Symbol};
 
 #[derive(Clone)]
 struct AppState {
@@ -99,7 +99,7 @@ pub async fn run(bind: &str) -> Result<()> {
         .with_state(state);
 
     let addr: SocketAddr = bind.parse()?;
-    
+
     println!("🚀 woofind API server running at http://{}", addr);
     println!("\nEndpoints:");
     println!("  GET  /health           - Health check");
@@ -146,7 +146,7 @@ async fn search(
     let elapsed = start.elapsed();
 
     let mut symbol_results: Vec<SymbolResult> = results.into_iter().map(Into::into).collect();
-    
+
     // Attach scores
     for (result, score) in symbol_results.iter_mut().zip(scores) {
         result.score = score;

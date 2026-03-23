@@ -2,8 +2,6 @@
 
 pub mod commands;
 
-
-
 /// Print a table to stdout
 pub fn print_table(headers: &[&str], rows: &[Vec<String>]) {
     if rows.is_empty() {
@@ -13,7 +11,7 @@ pub fn print_table(headers: &[&str], rows: &[Vec<String>]) {
 
     // Calculate column widths
     let mut widths: Vec<usize> = headers.iter().map(|h| h.len()).collect();
-    
+
     for row in rows {
         for (i, cell) in row.iter().enumerate() {
             if i < widths.len() {

@@ -4,7 +4,6 @@ use anyhow::Result;
 use colored::Colorize;
 use std::sync::Arc;
 
-
 use crate::cache::MmapCache;
 use crate::cli::{print_error, print_info};
 use crate::index::QueryEngine;
@@ -43,24 +42,29 @@ pub async fn run(symbol: &str, limit: usize, fuzzy: bool) -> Result<()> {
 
     if results.is_empty() {
         print_info(&format!("No results found for '{}'", symbol));
-        
+
         // Suggest fuzzy search if exact match failed
         if !fuzzy {
             println!("\n💡 Try with --fuzzy flag for approximate matching");
         }
     } else {
-        println!("\n🔍 Found {} result(s) for '{}' in {:?}\n", 
-            results.len().to_string().cyan(), 
+        println!(
+            "\n🔍 Found {} result(s) for '{}' in {:?}\n",
+            results.len().to_string().cyan(),
             symbol.yellow(),
             elapsed
         );
 
         for (i, sym) in results.iter().enumerate() {
-            println!("  {}. {} {} {}",
+            println!(
+                "  {}. {} {} {}",
                 (i + 1).to_string().dimmed(),
                 sym.name.green().bold(),
                 format!("({})", sym.kind).blue(),
-                sym.signature.as_ref().map(|s| format!("\n     {}", s.dimmed())).unwrap_or_default()
+                sym.signature
+                    .as_ref()
+                    .map(|s| format!("\n     {}", s.dimmed()))
+                    .unwrap_or_default()
             );
             println!("     {}", sym.package.cyan());
             if let Some(doc) = &sym.doc {

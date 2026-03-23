@@ -1,5 +1,5 @@
 //! Memory-mapped cache for instant cold starts
-//! 
+//!
 //! 内存映射：使用 memmap2 将 go.sum / go.mod 缓存文件映射到内存
 //! 冷启动从 2s 降至 200ms
 
@@ -31,7 +31,7 @@ struct CacheMetadata {
 impl MmapCache {
     pub fn new(cache_dir: &Path) -> Result<Self> {
         std::fs::create_dir_all(cache_dir)?;
-        
+
         Ok(Self {
             cache_dir: cache_dir.to_path_buf(),
         })
@@ -71,14 +71,14 @@ impl MmapCache {
         std::fs::write(&metadata_path, metadata_json)?;
 
         info!("💾 Cache saved: {} symbols", metadata.symbol_count);
-        
+
         Ok(())
     }
 
     /// Load index from memory-mapped file
     pub fn load_index(&self) -> Result<Option<InvertedIndex>> {
         let index_path = self.cache_dir.join(INDEX_CACHE_FILE);
-        
+
         if !index_path.exists() {
             return Ok(None);
         }
@@ -102,7 +102,7 @@ impl MmapCache {
     /// Check if cache is valid and recent
     pub fn is_cache_valid(&self, max_age_hours: u64) -> bool {
         let metadata_path = self.cache_dir.join(METADATA_FILE);
-        
+
         if !metadata_path.exists() {
             return false;
         }
@@ -126,9 +126,9 @@ impl MmapCache {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_secs();
-        
+
         let age_hours = (now - metadata.created_at) / 3600;
-        
+
         if age_hours > max_age_hours {
             warn!("Cache is {} hours old, rebuilding...", age_hours);
             return false;
@@ -164,7 +164,7 @@ impl MmapCache {
 
         let metadata_json = std::fs::read_to_string(&metadata_path)?;
         let metadata: CacheMetadata = serde_json::from_str(&metadata_json)?;
-        
+
         let file_size = std::fs::metadata(&index_path)?.len();
 
         Ok(Some(CacheStats {
@@ -218,7 +218,9 @@ impl SerializedIndex {
         }
 
         for module in &self.modules {
-            index.module_metadata.insert(module.path.clone(), module.clone());
+            index
+                .module_metadata
+                .insert(module.path.clone(), module.clone());
         }
 
         index
@@ -235,7 +237,7 @@ impl MmapReader {
     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self> {
         let file = File::open(path)?;
         let mmap = unsafe { Mmap::map(&file)? };
-        
+
         Ok(Self { mmap })
     }
 
@@ -246,9 +248,7 @@ impl MmapReader {
 
     /// Parse as text lines
     pub fn lines(&self) -> impl Iterator<Item = &str> {
-        std::str::from_utf8(&self.mmap)
-            .unwrap_or("")
-            .lines()
+        std::str::from_utf8(&self.mmap).unwrap_or("").lines()
     }
 }
 
@@ -260,7 +260,7 @@ pub struct ModuleCache {
 impl ModuleCache {
     pub fn new(cache_dir: &Path) -> Result<Self> {
         std::fs::create_dir_all(cache_dir)?;
-        
+
         Ok(Self {
             cache_dir: cache_dir.to_path_buf(),
         })
@@ -270,10 +270,10 @@ impl ModuleCache {
     pub fn cache_module(&self, module_path: &str, data: &[u8]) -> Result<()> {
         let safe_name = module_path.replace('/', "_").replace('\\', "_");
         let path = self.cache_dir.join(format!("{}.bin", safe_name));
-        
+
         std::fs::write(&path, data)?;
         debug!("Cached module: {}", module_path);
-        
+
         Ok(())
     }
 
@@ -281,14 +281,14 @@ impl ModuleCache {
     pub fn load_module(&self, module_path: &str) -> Result<Option<Mmap>> {
         let safe_name = module_path.replace('/', "_").replace('\\', "_");
         let path = self.cache_dir.join(format!("{}.bin", safe_name));
-        
+
         if !path.exists() {
             return Ok(None);
         }
 
         let file = File::open(&path)?;
         let mmap = unsafe { Mmap::map(&file)? };
-        
+
         Ok(Some(mmap))
     }
 }
@@ -302,7 +302,7 @@ mod tests {
     fn test_cache_save_load() {
         let temp = TempDir::new().unwrap();
         let cache = MmapCache::new(temp.path()).unwrap();
-        
+
         // Create a test index
         let index = InvertedIndex::new();
         index.insert(crate::index::Symbol {
@@ -319,7 +319,7 @@ mod tests {
         // Save and load
         cache.save_index(&index).unwrap();
         let loaded = cache.load_index().unwrap();
-        
+
         assert!(loaded.is_some());
         let loaded = loaded.unwrap();
         assert_eq!(loaded.stats().total_symbols, 1);

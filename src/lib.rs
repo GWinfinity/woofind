@@ -32,7 +32,7 @@ impl Woofind {
     pub fn new() -> Self {
         let index = Arc::new(InvertedIndex::new());
         let engine = QueryEngine::new(Arc::clone(&index));
-        
+
         Self { index, engine }
     }
 
@@ -41,9 +41,9 @@ impl Woofind {
         let cache_dir = dirs::cache_dir()
             .map(|d| d.join("woofind"))
             .unwrap_or_else(|| std::path::PathBuf::from(".woofind_cache"));
-        
+
         let cache = MmapCache::new(&cache_dir)?;
-        
+
         let index = if cache.is_cache_valid(24) {
             cache.load_index()?.unwrap_or_else(InvertedIndex::new)
         } else {
@@ -56,7 +56,7 @@ impl Woofind {
 
         let index = Arc::new(index);
         let engine = QueryEngine::new(Arc::clone(&index));
-        
+
         Ok(Self { index, engine })
     }
 

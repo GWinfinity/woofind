@@ -1,5 +1,5 @@
 //! Inverted Index for Go symbol lookup
-//! 
+//!
 //! 倒排符号表：从符号名到包路径的快速映射
 //! 使用 DashMap 实现无锁并发读写，16 线程下比 Go sync.Map 快 10 倍
 
@@ -69,13 +69,13 @@ pub struct InvertedIndex {
     /// Primary index: symbol name -> Vec<Symbol>
     /// DashMap provides atomic operations without locks
     pub name_index: Arc<DashMap<String, Vec<Symbol>>>,
-    
+
     /// Package path -> symbols in that package
     pub(crate) package_index: Arc<DashMap<String, Vec<Symbol>>>,
-    
+
     /// Prefix tree for auto-completion (FST-based)
     pub(crate) prefix_index: Arc<DashMap<char, Vec<String>>>,
-    
+
     /// Module path -> metadata
     pub(crate) module_metadata: Arc<DashMap<String, ModuleInfo>>,
 }
@@ -177,7 +177,7 @@ impl InvertedIndex {
     /// Batch insert symbols (parallelized with Rayon)
     pub fn batch_insert(&self, symbols: Vec<Symbol>) {
         use rayon::prelude::*;
-        
+
         symbols.into_par_iter().for_each(|symbol| {
             self.insert(symbol);
         });
