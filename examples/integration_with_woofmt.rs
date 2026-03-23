@@ -2,7 +2,6 @@
 //!
 //! 展示如何使用 woofind 的符号索引优化 woofmt 的导入分析
 
-use std::collections::HashSet;
 use std::sync::Arc;
 use woofind::index::{InvertedIndex, QueryEngine};
 
@@ -33,11 +32,8 @@ impl ImportAnalyzer {
             // 查询该导入的包是否被使用
             let is_used = used_symbols.iter().any(|sym| {
                 // 检查符号是否来自该导入
-                if let Some(symbols) = self.query_engine.exact_lookup(sym) {
-                    symbols.iter().any(|s| s.package == import)
-                } else {
-                    false
-                }
+                let symbols = self.query_engine.exact_lookup(sym);
+                symbols.iter().any(|s| s.package == import)
             });
             
             if !is_used {
