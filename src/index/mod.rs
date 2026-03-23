@@ -68,7 +68,7 @@ impl std::fmt::Display for SymbolKind {
 pub struct InvertedIndex {
     /// Primary index: symbol name -> Vec<Symbol>
     /// DashMap provides atomic operations without locks
-    pub(crate) name_index: Arc<DashMap<String, Vec<Symbol>>>,
+    pub name_index: Arc<DashMap<String, Vec<Symbol>>>,
     
     /// Package path -> symbols in that package
     pub(crate) package_index: Arc<DashMap<String, Vec<Symbol>>>,
