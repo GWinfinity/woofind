@@ -1,0 +1,14 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Rust source files
+*.rs text diff=rust
+*.toml text
+Cargo.lock text
+
+# Documentation
+*.md text diff=markdown
+
+# Binary files
+*.lock binary
+*.bin binary

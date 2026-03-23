@@ -1,0 +1,20 @@
+#!/bin/bash
+# Pre-commit hook for woofind
+
+set -e
+
+echo "🐕 Running pre-commit checks..."
+
+# Check formatting
+echo "Checking code formatting..."
+cargo fmt -- --check
+
+# Run clippy
+echo "Running clippy..."
+cargo clippy -- -D warnings
+
+# Run tests
+echo "Running tests..."
+cargo test
+
+echo "✅ Pre-commit checks passed!"
