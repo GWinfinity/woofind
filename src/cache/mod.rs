@@ -3,6 +3,8 @@
 //! 内存映射：使用 memmap2 将 go.sum / go.mod 缓存文件映射到内存
 //! 冷启动从 2s 降至 200ms
 
+#![allow(dead_code)]
+
 use anyhow::Result;
 use memmap2::Mmap;
 use std::fs::{File, OpenOptions};
@@ -268,7 +270,7 @@ impl ModuleCache {
 
     /// Cache a parsed module
     pub fn cache_module(&self, module_path: &str, data: &[u8]) -> Result<()> {
-        let safe_name = module_path.replace('/', "_").replace('\\', "_");
+        let safe_name = module_path.replace(['/', '\\'], "_");
         let path = self.cache_dir.join(format!("{}.bin", safe_name));
 
         std::fs::write(&path, data)?;
@@ -279,7 +281,7 @@ impl ModuleCache {
 
     /// Load a cached module via mmap
     pub fn load_module(&self, module_path: &str) -> Result<Option<Mmap>> {
-        let safe_name = module_path.replace('/', "_").replace('\\', "_");
+        let safe_name = module_path.replace(['/', '\\'], "_");
         let path = self.cache_dir.join(format!("{}.bin", safe_name));
 
         if !path.exists() {

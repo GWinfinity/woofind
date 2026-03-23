@@ -2,6 +2,8 @@
 //!
 //! 微秒级实时解析（Real-time Resolution）
 
+#![allow(dead_code)]
+
 use axum::{
     extract::{Query, State},
     http::StatusCode,

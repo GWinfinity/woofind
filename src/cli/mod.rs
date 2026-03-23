@@ -1,5 +1,7 @@
 //! CLI command implementations
 
+#![allow(dead_code)]
+
 pub mod commands;
 
 /// Print a table to stdout

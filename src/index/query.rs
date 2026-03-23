@@ -3,6 +3,8 @@
 //! 模糊匹配（Fuzzy Finding）如 redis.NewClient → github.com/redis/go-redis
 //! 微秒级实时解析（Real-time Resolution）
 
+#![allow(dead_code)]
+
 use super::{InvertedIndex, Symbol};
 use dashmap::DashMap;
 use nucleo::pattern::{Atom, AtomKind, CaseMatching, Normalization};
@@ -202,6 +204,7 @@ pub struct SimpleFuzzyMatcher;
 
 impl SimpleFuzzyMatcher {
     /// Calculate edit distance between two strings
+    #[allow(clippy::needless_range_loop)]
     pub fn edit_distance(a: &str, b: &str) -> usize {
         let a_chars: Vec<char> = a.chars().collect();
         let b_chars: Vec<char> = b.chars().collect();

@@ -8,6 +8,7 @@ use crate::cache::MmapCache;
 use crate::cli::{print_info, print_success};
 use crate::index::{IndexBuilder, InvertedIndex};
 
+#[allow(unused_assignments)]
 pub async fn run(path: &str, watch: bool) -> Result<()> {
     let root = Path::new(path);
 

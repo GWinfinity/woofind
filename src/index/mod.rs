@@ -3,6 +3,8 @@
 //! 倒排符号表：从符号名到包路径的快速映射
 //! 使用 DashMap 实现无锁并发读写，16 线程下比 Go sync.Map 快 10 倍
 
+#![allow(dead_code)]
+
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;

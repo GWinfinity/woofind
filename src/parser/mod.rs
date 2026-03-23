@@ -14,12 +14,20 @@ pub struct ParsedModule {
     pub version: Option<String>,
     pub go_version: String,
     pub symbols: Vec<Symbol>,
+    #[allow(dead_code)]
     pub files: Vec<PathBuf>,
 }
 
 /// Parser for Go modules and source files
 pub struct GoModuleParser {
+    #[allow(dead_code)]
     parser: Parser,
+}
+
+impl Default for GoModuleParser {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl GoModuleParser {

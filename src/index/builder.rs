@@ -2,6 +2,8 @@
 //!
 //! 增量更新：基于 notify 库监听文件系统事件，变更时仅更新差量索引
 
+#![allow(dead_code)]
+
 use super::{InvertedIndex, ModuleInfo};
 use anyhow::Result;
 use crossbeam_channel::{unbounded, Receiver, Sender};
