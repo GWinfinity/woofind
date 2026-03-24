@@ -62,16 +62,16 @@
 //! // 手动构建索引
 //! let index = Arc::new(InvertedIndex::new());
 //! let builder = IndexBuilder::with_index(Arc::clone(&index)).unwrap();
-//! 
+//!
 //! // 从目录构建
 //! builder.build_from_directory(Path::new("./project")).unwrap();
-//! 
+//!
 //! // 保存到缓存
 //! builder.save_to_cache().unwrap();
-//! 
+//!
 //! // 创建查询引擎
 //! let engine = QueryEngine::new(Arc::clone(&index));
-//! 
+//!
 //! // 执行查询
 //! let symbols = engine.exact_lookup("http.Client");
 //! let fuzzy_results = engine.fuzzy_search("htp.Clint", 10);
@@ -165,7 +165,7 @@
 //! let index = Arc::new(InvertedIndex::new());
 //! let builder = IndexBuilder::with_index(Arc::clone(&index)).unwrap();
 //! builder.build_from_directory(Path::new(".")).unwrap();
-//! 
+//!
 //! // 检查索引统计
 //! let stats = index.stats();
 //! println!("Total symbols: {}", stats.total_symbols);
@@ -201,7 +201,7 @@ pub mod parser;
 
 // Re-export main types
 pub use cache::{MmapCache, ModuleCache};
-pub use index::{IndexBuilder, InvertedIndex, QueryEngine, Symbol, SymbolKind, IndexStats};
+pub use index::{IndexBuilder, IndexStats, InvertedIndex, QueryEngine, Symbol, SymbolKind};
 pub use parser::{GoModuleParser, ParsedModule};
 
 use anyhow::Result;
@@ -402,7 +402,7 @@ impl Woofind {
     ///
     /// let client = Woofind::new();
     /// let stats = client.stats();
-    /// println!("Symbols: {}, Packages: {}", 
+    /// println!("Symbols: {}, Packages: {}",
     ///          stats.total_symbols, stats.total_packages);
     /// ```
     pub fn stats(&self) -> IndexStats {
