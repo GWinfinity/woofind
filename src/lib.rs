@@ -54,9 +54,10 @@
 //!
 //! ### 高级用法
 //!
-//! ```rust
+//! ```rust,no_run
 //! use woofind::index::{IndexBuilder, InvertedIndex, QueryEngine};
 //! use std::sync::Arc;
+//! use std::path::Path;
 //!
 //! // 手动构建索引
 //! let index = Arc::new(InvertedIndex::new());
@@ -129,6 +130,9 @@
 //! ### IDE 自动补全
 //!
 //! ```rust
+//! use woofind::Woofind;
+//!
+//! let client = Woofind::new();
 //! // 前缀补全，延迟 ~80μs
 //! let suggestions = client.autocomplete("http.", 10);
 //! for s in suggestions {
@@ -139,6 +143,9 @@
 //! ### 符号跳转
 //!
 //! ```rust
+//! use woofind::Woofind;
+//!
+//! let client = Woofind::new();
 //! // 查找符号定义位置
 //! let symbols = client.lookup("context.Background");
 //! if let Some(sym) = symbols.first() {
@@ -149,16 +156,18 @@
 //!
 //! ### CI 集成
 //!
-//! ```rust
-//! use woofind::index::IndexBuilder;
+//! ```rust,no_run
+//! use woofind::index::{IndexBuilder, InvertedIndex};
+//! use std::sync::Arc;
+//! use std::path::Path;
 //!
 //! // 构建索引
-//! let index = InvertedIndex::new();
-//! let builder = IndexBuilder::with_index(Arc::new(index)).unwrap();
+//! let index = Arc::new(InvertedIndex::new());
+//! let builder = IndexBuilder::with_index(Arc::clone(&index)).unwrap();
 //! builder.build_from_directory(Path::new(".")).unwrap();
 //! 
-//! // 检查未使用的导出符号
-//! let stats = builder.stats();
+//! // 检查索引统计
+//! let stats = index.stats();
 //! println!("Total symbols: {}", stats.total_symbols);
 //! ```
 //!
@@ -166,16 +175,17 @@
 //!
 //! woofind 可以与 woolink 无缝集成，提供跨包符号解析能力：
 //!
-//! ```rust
+//! ```rust,ignore
 //! use woofind::Woofind;
-//! use woolink::bridge::SymbolImporter;
+//! use std::path::Path;
+//! // use woolink::bridge::SymbolImporter;
 //!
 //! // 构建 woofind 索引
 //! let woofind = Woofind::load_or_build(Path::new(".")).unwrap();
 //!
 //! // 导入到 woolink
-//! let importer = SymbolImporter::new(&universe);
-//! importer.import_from_woofind(&woofind).unwrap();
+//! // let importer = SymbolImporter::new(&universe);
+//! // importer.import_from_woofind(&woofind).unwrap();
 //! ```
 //!
 //! ## 更多信息
