@@ -8,8 +8,6 @@
 
 woofind 是用 Rust 编写的高性能 Go 符号索引与搜索引擎，采用倒排索引和内存映射技术，实现微秒级符号查询响应。
 
-> 🐕 **Woo Ecosystem 核心组件**: [woofind](https://github.com/yourusername/woofind) → [woolink](https://github.com/yourusername/woolink) → [wootype](https://github.com/yourusername/wootype)
-
 ---
 
 ## 🚀 极致性能
@@ -345,48 +343,6 @@ woofind unused --package "mypkg"
 
 - name: Check for unused symbols
   run: woofind unused --index symbols.idx --fail-on-found
-```
-
----
-
-## 🔌 生态系统
-
-woofind 是 Woo Ecosystem 的核心组件：
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Woo Ecosystem                            │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│   ┌──────────┐        ┌──────────┐        ┌──────────┐     │
-│   │ woofind  │───────▶│ woolink  │◀───────│ wootype  │     │
-│   │ (搜索)    │ 索引   │ (链接)   │  类型   │ (类型)   │     │
-│   └──────────┘        └────┬─────┘        └──────────┘     │
-│                             │                                │
-│                             ▼                                │
-│                    ┌─────────────────┐                      │
-│                    │   AI Agent /    │                      │
-│                    │   IDE / LSP     │                      │
-│                    └─────────────────┘                      │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-```
-
-- **[woolink](https://crates.io/crates/woolink)**: 跨包符号解析，全局符号表
-- **[wootype](https://crates.io/crates/wootype)**: 类型检查引擎，增量计算
-
-### 与 woolink 集成
-
-```rust
-use woofind::Woofind;
-use woolink::bridge::SymbolImporter;
-
-// 构建 woofind 索引
-let woofind = Woofind::load_or_build(Path::new(".")).unwrap();
-
-// 导入到 woolink
-let importer = SymbolImporter::new(&universe);
-importer.import_from_woofind(&woofind).unwrap();
 ```
 
 ---

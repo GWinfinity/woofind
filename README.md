@@ -8,8 +8,6 @@
 
 woofind is a high-performance Go symbol indexing and search engine written in Rust, featuring inverted indexing and memory mapping technology for microsecond-level query response.
 
-> 🐕 **Part of Woo Ecosystem**: [woofind](https://github.com/yourusername/woofind) → [woolink](https://github.com/yourusername/woolink) → [wootype](https://github.com/yourusername/wootype)
-
 📖 [中文文档](README_CN.md)
 
 ---
@@ -323,34 +321,6 @@ woofind unused --package "mypkg"
 - name: Check for unused symbols
   run: woofind unused --index symbols.idx --fail-on-found
 ```
-
----
-
-## 🔌 Ecosystem
-
-woofind is a core component of the Woo Ecosystem:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Woo Ecosystem                            │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│   ┌──────────┐        ┌──────────┐        ┌──────────┐     │
-│   │ woofind  │───────▶│ woolink  │◀───────│ wootype  │     │
-│   │ (Search) │ Index  │  (Link)  │  Types  │ (Types)  │     │
-│   └──────────┘        └────┬─────┘        └──────────┘     │
-│                             │                                │
-│                             ▼                                │
-│                    ┌─────────────────┐                      │
-│                    │   AI Agent /    │                      │
-│                    │   IDE / LSP     │                      │
-│                    └─────────────────┘                      │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-```
-
-- **[woolink](https://crates.io/crates/woolink)**: Cross-package symbol resolution, global symbol table
-- **[wootype](https://crates.io/crates/wootype)**: Type checking engine, incremental computation
 
 ---
 
