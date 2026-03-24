@@ -3,11 +3,11 @@ name = "woofind"
 version = "0.1.0"
 edition = "2021"
 authors = ["Woofind Contributors"]
-description = "Blazing-fast Go import discovery with lock-free concurrency and fuzzy matching"
+description = "Blazing-fast Go symbol search engine —— Vibe Coding toolchain"
 license = "Apache-2.0"
 repository = "https://github.com/GWinfinity/woofind"
 readme = "README.md"
-keywords = ["go", "golang", "import", "discovery", "fuzzy", "rust"]
+keywords = ["go", "golang", "import", "discovery", "fuzzy"]
 categories = ["development-tools", "command-line-utilities"]
 rust-version = "1.75"
 

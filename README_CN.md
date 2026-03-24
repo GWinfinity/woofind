@@ -1,70 +1,68 @@
 # woofind 🐕
 
-**⚡ Blazing-fast Go Symbol Search Engine — 10-50x faster than gopls**
+**⚡ 极速 Go 符号搜索引擎 —— 比 gopls 快 10-50 倍**
 
 [![Crates.io](https://img.shields.io/crates/v/woofind)](https://crates.io/crates/woofind)
 [![Docs.rs](https://docs.rs/woofind/badge.svg)](https://docs.rs/woofind)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-woofind is a high-performance Go symbol indexing and search engine written in Rust, featuring inverted indexing and memory mapping technology for microsecond-level query response.
+woofind 是用 Rust 编写的高性能 Go 符号索引与搜索引擎，采用倒排索引和内存映射技术，实现微秒级符号查询响应。
 
-> 🐕 **Part of Woo Ecosystem**: [woofind](https://github.com/yourusername/woofind) → [woolink](https://github.com/yourusername/woolink) → [wootype](https://github.com/yourusername/wootype)
-
-📖 [中文文档](README_CN.md)
+> 🐕 **Woo Ecosystem 核心组件**: [woofind](https://github.com/yourusername/woofind) → [woolink](https://github.com/yourusername/woolink) → [wootype](https://github.com/yourusername/wootype)
 
 ---
 
-## 🚀 Extreme Performance
+## 🚀 极致性能
 
-### Speed Comparison
+### 速度对比
 
-| Scenario | woofind | gopls | guru | Speedup |
-|----------|---------|-------|------|---------|
-| **Exact Query** | 40μs | ~500μs | ~1ms | **12-25x** |
-| **Fuzzy Match** | 80μs | ~2ms | ~5ms | **25-60x** |
-| **Smart Search** | 50μs | ~1ms | ~3ms | **20-60x** |
-| **16-thread Concurrent** | 2.4ms | ~25ms | ~50ms | **10-20x** |
-| **Cold Start (mmap)** | 7ms | ~100ms | ~200ms | **15-30x** |
+| 场景 | woofind | gopls | guru | 领先倍数 |
+|------|---------|-------|------|----------|
+| **精确查询** | 40μs | ~500μs | ~1ms | **12-25x** |
+| **模糊匹配** | 80μs | ~2ms | ~5ms | **25-60x** |
+| **智能搜索** | 50μs | ~1ms | ~3ms | **20-60x** |
+| **16 线程并发** | 2.4ms | ~25ms | ~50ms | **10-20x** |
+| **冷启动 (mmap)** | 7ms | ~100ms | ~200ms | **15-30x** |
 
-*Test environment: Standard x86_64, SSD, 10,000 symbols*
+*测试环境：标准 x86_64，SSD 硬盘，10000 符号*
 
-### Why So Fast?
+### 为什么这么快？
 
 ```
-🦀 Native Rust Performance
-   ├─ Zero-cost abstractions
-   ├─ No GC pauses
-   └─ Extreme memory control
+🦀 Rust 原生性能
+   ├─ 零成本抽象
+   ├─ 无 GC 停顿
+   └─ 极致内存控制
 
-⚡ Lock-free Concurrency with DashMap
-   ├─ Sharded locks
-   ├─ Almost contention-free reads
-   └─ 10x faster than Go's sync.Map
+⚡ DashMap 无锁并发
+   ├─ 分片锁 (Sharded Lock)
+   ├─ 读操作几乎无竞争
+   └─ 比 sync.Map 快 10x
 
-💾 Memmap2 Zero-copy
-   ├─ Direct index file mapping
-   ├─ No deserialization needed
-   └─ Hot start in 7ms
+💾 Memmap2 零拷贝
+   ├─ 索引文件直接映射
+   ├─ 无需反序列化
+   └─ 热启动 7ms
 
-🔍 Inverted Index Design
-   ├─ Symbol name → package/location
-   ├─ Prefix tree for auto-completion
-   └─ FST fuzzy matching
+🔍 倒排索引设计
+   ├─ 符号名 → 包/位置
+   ├─ 前缀树自动补全
+   └─ FST 模糊匹配
 ```
 
 ---
 
-## 📊 Performance Details
+## 📊 性能详情
 
-### Cold Start vs Hot Start
+### 冷启动 vs 热启动
 
-| Scenario | Time | Description |
-|----------|------|-------------|
-| **Cold Start** (index build) | ~360ms (100 modules) | Tree-sitter parsing |
-| **Hot Start** (mmap load) | **~3-7ms** | memmap2 memory mapping |
-| **Speedup** | **~50-100x** | Zero-copy advantage |
+| 场景 | 时间 | 说明 |
+|------|------|------|
+| **冷启动** (索引构建) | ~360ms (100 模块) | Tree-sitter 解析 |
+| **热启动** (mmap 加载) | **~3-7ms** | memmap2 内存映射 |
+| **加速比** | **~50-100x** | 零拷贝优势 |
 
-### Criterion Benchmarks
+### Criterion 基准测试
 
 ```
 exact_query     time:   [39.156 µs 40.312 µs 41.470 µs]
@@ -73,42 +71,42 @@ smart_search    time:   [52.343 µs 54.070 µs 55.827 µs]
 concurrent_16   time:   [2.4157 ms 2.4541 ms 2.4940 ms]
 ```
 
-### Comparison with Go Tools
+### 与 Go 工具对比
 
-| Feature | woofind (Rust) | Go Tools (estimated) |
-|---------|---------------|---------------------|
-| Index Build | ~360ms/100 modules | ~2s (gopls) |
-| Cold Start | ~7ms (mmap) | ~100-200ms |
-| Exact Query | ~40μs | ~500μs-1ms |
-| Concurrent Read (16 threads) | ~2.5ms | ~25-50ms |
-| Memory Usage | ~1-2MB (cache) | ~10-50MB |
-
----
-
-## ✨ Features
-
-| Feature | Description |
-|---------|-------------|
-| 🔍 **Inverted Index** | Fast symbol name → package/location mapping |
-| ⚡ **Lock-free Concurrency** | DashMap supports 16+ concurrent threads |
-| 🎯 **Fuzzy Matching** | nucleo engine with intelligent ranking |
-| 📦 **Incremental Updates** | notify file watching, update only changes |
-| 💾 **mmap Loading** | Direct index file mapping, zero-copy |
-| 🔌 **Multiple Query Types** | Exact/fuzzy/prefix/smart search |
-| 📊 **Statistics** | Symbol count, package dependency analysis |
-| 🌐 **API Service** | HTTP/gRPC query interfaces |
+| 特性 | woofind (Rust) | Go 工具 (预估) |
+|------|---------------|---------------|
+| 索引构建 | ~360ms/100 模块 | ~2s (gopls) |
+| 冷启动 | ~7ms (mmap) | ~100-200ms |
+| 精确查询 | ~40μs | ~500μs-1ms |
+| 并发读 (16 线程) | ~2.5ms | ~25-50ms |
+| 内存占用 | ~1-2MB (cache) | ~10-50MB |
 
 ---
 
-## 📦 Installation
+## ✨ 功能特性
 
-### From crates.io
+| 特性 | 描述 |
+|------|------|
+| 🔍 **倒排索引** | 符号名 → 包/位置的快速映射 |
+| ⚡ **无锁并发** | DashMap 支持 16+ 线程并发读 |
+| 🎯 **模糊匹配** | nucleo 引擎，智能排序 |
+| 📦 **增量更新** | notify 文件监听，只更新变更 |
+| 💾 **mmap 加载** | 索引文件直接映射，零拷贝 |
+| 🔌 **多种查询** | 精确/模糊/前缀/智能搜索 |
+| 📊 **统计信息** | 符号计数、包依赖分析 |
+| 🌐 **API 服务** | HTTP/gRPC 查询接口 |
+
+---
+
+## 📦 安装
+
+### 从 crates.io
 
 ```bash
 cargo install woofind
 ```
 
-### From Source
+### 从源码
 
 ```bash
 git clone https://github.com/yourusername/woofind.git
@@ -116,7 +114,7 @@ cd woofind
 cargo install --path . --release
 ```
 
-### Pre-built Binaries
+### 预编译二进制
 
 ```bash
 # Linux x86_64
@@ -127,115 +125,115 @@ sudo mv woofind /usr/local/bin/
 
 ---
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-### As a Library
+### 作为库使用
 
 ```rust
 use woofind::Woofind;
 use std::path::Path;
 
-// Create client
+// 创建客户端
 let client = Woofind::new();
 
-// Or load/build index from directory
+// 或从目录加载/构建索引
 let client = Woofind::load_or_build(Path::new("./my-project")).unwrap();
 
-// Exact lookup
+// 精确查询
 let symbols = client.lookup("NewClient");
 
-// Fuzzy search
+// 模糊搜索
 let results = client.fuzzy_search("NewCli", 10);
 
-// Smart search (auto-select strategy)
+// 智能搜索
 let results = client.search("context", 10);
 
-// Autocomplete
+// 自动补全
 let suggestions = client.autocomplete("New", 5);
 ```
 
-### Advanced Usage
+### 高级用法
 
 ```rust
 use woofind::index::{IndexBuilder, InvertedIndex, QueryEngine};
 use std::sync::Arc;
 
-// Build index manually
+// 手动构建索引
 let index = Arc::new(InvertedIndex::new());
 let builder = IndexBuilder::with_index(Arc::clone(&index)).unwrap();
 
-// Build from directory
+// 从目录构建
 builder.build_from_directory(Path::new("./project")).unwrap();
 
-// Save to cache
+// 保存到缓存
 builder.save_to_cache().unwrap();
 
-// Create query engine
+// 创建查询引擎
 let engine = QueryEngine::new(Arc::clone(&index));
 
-// Execute queries
+// 执行查询
 let symbols = engine.exact_lookup("http.Client");
 let fuzzy_results = engine.fuzzy_search("htp.Clint", 10);
 ```
 
-### CLI Usage
+### CLI 用法
 
-#### Build Index
+#### 构建索引
 
 ```bash
-# Scan Go project and build index
+# 扫描 Go 项目并构建索引
 woofind index .
 
-# Specify output file
+# 指定输出文件
 woofind index . --output myproject.idx
 
-# Include private symbols
+# 包含私有符号
 woofind index . --include-private
 ```
 
-#### Query Symbols
+#### 查询符号
 
 ```bash
-# Exact query
+# 精确查询
 woofind query "NewClient" --index myproject.idx
 
-# Fuzzy match
+# 模糊匹配
 woofind query "NewCli" --fuzzy
 
-# Query in specific package
+# 在特定包中查询
 woofind query "Handler" --package "github.com/gin-gonic/gin"
 
-# Smart search (hybrid strategy)
+# 智能搜索（混合策略）
 woofind query "ctx" --smart
 ```
 
-#### Autocomplete
+#### 自动补全
 
 ```bash
-# Prefix completion
+# 前缀补全
 woofind complete "New" --index myproject.idx
 
-# Export as JSON
+# 导出为 JSON
 woofind complete "New" --format json
 ```
 
-#### Start API Service
+#### 启动 API 服务
 
 ```bash
-# HTTP service
+# HTTP 服务
 woofind serve --port 8080 --index myproject.idx
 
-# gRPC service
+# gRPC 服务
 woofind grpc --port 50051
 ```
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ 架构亮点
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    woofind Architecture                      │
+│                    woofind 高性能架构                        │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
@@ -249,7 +247,7 @@ woofind grpc --port 50051
 │  │                                                      │   │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐  │   │
 │  │  │ name_index   │  │ package_index│  │prefix_idx│  │   │
-│  │  │ (symbol→loc) │  │ (pkg→symbols)│  │(autocomp)│  │   │
+│  │  │ (符号→位置)   │  │ (包→符号列表) │  │(自动补全)│  │   │
 │  │  └──────────────┘  └──────────────┘  └──────────┘  │   │
 │  └──────────────────────────────────────────────────────┘   │
 │                             │                                │
@@ -258,59 +256,84 @@ woofind grpc --port 50051
 │  │                                                      │   │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐  │   │
 │  │  │   MmapCache  │  │  File Watch  │  │ Increment│  │   │
-│  │  │  (mmap)      │  │  (notify)    │  │  Update  │  │   │
+│  │  │  (内存映射)   │  │  (notify)    │  │  Update  │  │   │
 │  │  └──────────────┘  └──────────────┘  └──────────┘  │   │
 │  └──────────────────────────────────────────────────────┘   │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Core Technologies
+### 核心技术
 
-| Technology | Purpose | Effect |
-|------------|---------|--------|
-| **DashMap** | Concurrent Index | Sharded locks, contention-free reads |
-| **Memmap2** | Index Loading | Zero-copy, 7ms startup |
-| **Tree-sitter** | Go Parsing | Accurate, incremental |
-| **Notify** | File Watching | Incremental updates |
-| **Nucleo** | Fuzzy Matching | Intelligent ranking |
-| **Rayon** | Parallel Indexing | Parallel builds |
-
----
-
-## 📚 Documentation
-
-- [API Docs](https://docs.rs/woofind)
-- [Architecture](ARCHITECTURE.md)
-- [Chinese Docs](README_CN.md)
+| 技术 | 用途 | 效果 |
+|------|------|------|
+| **DashMap** | 并发索引 | 分片锁，读无竞争 |
+| **Memmap2** | 索引加载 | 零拷贝，7ms 启动 |
+| **Tree-sitter** | Go 解析 | 精确、可增量 |
+| **Notify** | 文件监听 | 增量更新 |
+| **Nucleo** | 模糊匹配 | 智能排序 |
+| **Rayon** | 并行索引 | 并行构建 |
 
 ---
 
-## 💡 Use Cases
+## 📚 API 文档
 
-### IDE Autocompletion
+### 核心类型
+
+| 类型 | 描述 |
+|------|------|
+| `Woofind` | 高级客户端，封装索引和查询 |
+| `InvertedIndex` | 倒排索引，线程安全 |
+| `IndexBuilder` | 索引构建器 |
+| `QueryEngine` | 查询引擎 |
+| `Symbol` | 符号数据 |
+| `SymbolKind` | 符号类型 (函数/类型/常量等) |
+| `MmapCache` | 内存映射缓存 |
+
+### 模块结构
 
 ```
-User Input → woofind complete → Return candidate list
-Latency: ~80μs (fuzzy match)
-Experience: ✅ Instant response
+woofind/
+├── index/           # 倒排索引
+│   ├── InvertedIndex   # 主索引结构
+│   ├── IndexBuilder    # 索引构建
+│   └── QueryEngine     # 查询引擎
+├── cache/           # 缓存管理
+│   └── MmapCache       # 内存映射缓存
+├── parser/          # Go 代码解析
+│   └── GoModuleParser  # 模块解析器
+└── api/             # API 服务
+    ├── http.rs       # HTTP 接口
+    └── grpc.rs       # gRPC 接口
 ```
 
-### Symbol Jump
+---
+
+## 💡 使用场景
+
+### IDE 自动补全
+
+```
+用户输入 → woofind complete → 返回候选列表
+延迟: ~80μs (模糊匹配)
+体验: ✅ 即时响应
+```
+
+### 符号跳转
 
 ```bash
-# Find symbol definition
+# 查找符号定义
 woofind jump "http.Client" --index project.idx
-# Output: file path + line number + offset
+# 输出: 文件路径 + 行号 + 偏移
 ```
 
-### Code Search
+### 代码搜索
 
 ```bash
-# Find all types implementing an interface
+# 查找所有实现了某接口的类型
 woofind impl "io.Reader" --project .
 
-# Find unused exported symbols
+# 查找未使用的导出符号
 woofind unused --package "mypkg"
 ```
 
@@ -326,9 +349,9 @@ woofind unused --package "mypkg"
 
 ---
 
-## 🔌 Ecosystem
+## 🔌 生态系统
 
-woofind is a core component of the Woo Ecosystem:
+woofind 是 Woo Ecosystem 的核心组件：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -337,7 +360,7 @@ woofind is a core component of the Woo Ecosystem:
 │                                                              │
 │   ┌──────────┐        ┌──────────┐        ┌──────────┐     │
 │   │ woofind  │───────▶│ woolink  │◀───────│ wootype  │     │
-│   │ (Search) │ Index  │  (Link)  │  Types  │ (Types)  │     │
+│   │ (搜索)    │ 索引   │ (链接)   │  类型   │ (类型)   │     │
 │   └──────────┘        └────┬─────┘        └──────────┘     │
 │                             │                                │
 │                             ▼                                │
@@ -349,17 +372,31 @@ woofind is a core component of the Woo Ecosystem:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-- **[woolink](https://crates.io/crates/woolink)**: Cross-package symbol resolution, global symbol table
-- **[wootype](https://crates.io/crates/wootype)**: Type checking engine, incremental computation
+- **[woolink](https://crates.io/crates/woolink)**: 跨包符号解析，全局符号表
+- **[wootype](https://crates.io/crates/wootype)**: 类型检查引擎，增量计算
+
+### 与 woolink 集成
+
+```rust
+use woofind::Woofind;
+use woolink::bridge::SymbolImporter;
+
+// 构建 woofind 索引
+let woofind = Woofind::load_or_build(Path::new(".")).unwrap();
+
+// 导入到 woolink
+let importer = SymbolImporter::new(&universe);
+importer.import_from_woofind(&woofind).unwrap();
+```
 
 ---
 
-## 🤝 Contributing
+## 🤝 贡献
 
-Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+欢迎贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ```bash
-# Development environment
+# 开发环境
 git clone https://github.com/yourusername/woofind.git
 cd woofind
 cargo test
@@ -368,7 +405,7 @@ cargo bench
 
 ---
 
-## 📄 License
+## 📄 许可证
 
 MIT License © [Your Name]
 
@@ -376,4 +413,4 @@ MIT License © [Your Name]
 
 **Made with ❤️ and 🦀 Rust**
 
-> *"woofind makes Go symbol search so fast you forget it exists."*
+> *"woofind 让 Go 符号搜索快到忘记它存在。"*
